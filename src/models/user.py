@@ -1,5 +1,7 @@
-from pydantic import BaseModel, Field
+import datetime as dt
+
+from src.models.dynamodb import DynamoDBBaseModel
 
 
-class User(BaseModel):
-    username: str = Field(..., min_length=8, max_length=50)
+class User(DynamoDBBaseModel):
+    date_of_birth: dt.datetime

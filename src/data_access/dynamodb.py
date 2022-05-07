@@ -13,7 +13,7 @@ from src.settings import settings
 SK = TypeVar("SK")
 
 
-class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[PK, DynamoDBBaseModel], ABC):
+class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[str, DynamoDBBaseModel], ABC):
     def __init__(self, table_name: str) -> None:
         dynamodb: DynamoDBServiceResource = boto3.resource("dynamodb", region_name=settings.region)
         self._table = dynamodb.Table(table_name)
