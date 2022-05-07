@@ -15,7 +15,12 @@ SK = TypeVar("SK")
 
 class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[str, DynamoDBBaseModel], ABC):
     def __init__(self, table_name: str) -> None:
-        dynamodb: DynamoDBServiceResource = boto3.resource("dynamodb", region_name=settings.region)
+        dynamodb: DynamoDBServiceResource = boto3.resource(
+            "dynamodb",
+            region_name=settings.region,
+            aws_access_key_id=settings.access_key,
+            aws_secret_access_key=settings.secret_key,
+        )
         self._table = dynamodb.Table(table_name)
 
     @property
@@ -47,8 +52,8 @@ class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[str, DynamoDBBaseModel]
             for model in models:
                 batch.put_item(Item=model.dict())
 
-    def delete(self, *, pk: PK, sk: SK) -> bool:
-        key = {"PK": pk, "SK": sk}
-        result = self._table.delete_item(Key=key)
+        return models
 
-        return result
+    def delete(self, *, pk: PK, sk: SK) -> None:
+        key = {"PK": pk, "SK": sk}
+        self._table.delete_item(Key=key, ConditionExpression="attribute_exists(SK)")
