@@ -6,7 +6,7 @@ from boto3.dynamodb.conditions import Key
 from mypy_boto3_dynamodb import DynamoDBServiceResource
 
 from src.data_access.abstract import PK, AbstractDataAccess
-from src.models.dynamodb import DynamoDBBaseModel
+from src.models.abstract import DynamoDBBaseModel
 from src.settings import settings
 
 
@@ -33,7 +33,7 @@ class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[str, DynamoDBBaseModel]
 
         response = self._table.get_item(Key=key)
         if (item := response.get("Item")) is not None:
-            return self._model(**item)
+            return self._model.from_item(item)
 
         return None
 
@@ -44,13 +44,13 @@ class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[str, DynamoDBBaseModel]
         return [self._model(**item) for item in items]
 
     def create(self, *, model: DynamoDBBaseModel) -> DynamoDBBaseModel:
-        self._table.put_item(Item=model.dict(), ConditionExpression="attribute_not_exists(SK)")
+        self._table.put_item(Item=model.to_item(), ConditionExpression="attribute_not_exists(SK)")
         return model
 
     def create_many(self, *, models: list[DynamoDBBaseModel]) -> list[DynamoDBBaseModel]:
         with self._table.batch_writer() as batch:
             for model in models:
-                batch.put_item(Item=model.dict())
+                batch.put_item(Item=model.to_item())
 
         return models
 
