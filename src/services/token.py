@@ -1,14 +1,12 @@
 from typing import Optional
 from uuid import UUID
 
+from src.data_access.user import UserDynamoDBDataAccess
+
 
 class TokenService:
-    def __init__(
-        self, refresh_token_data_access: RefreshTokenDataAccess, user_data_access: UserDataAccess, auth_jwt: AuthJWT
-    ) -> None:
+    def __init__(self, user_data_access: UserDynamoDBDataAccess) -> None:
         self._user_data_access = user_data_access
-        self._refresh_token_data_access = refresh_token_data_access
-        self._auth_jwt = auth_jwt
 
     def _validate_user(self, user: Optional[User], token_input: TokenInput) -> list[Error]:
         errors = []
