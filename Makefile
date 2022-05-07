@@ -7,6 +7,9 @@ check:
 build-dev:
 	docker-compose build
 
+up-dev:
+	docker-compose up
+
 app-bash:
 	docker-compose run --rm app bash
 

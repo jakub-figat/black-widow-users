@@ -7,6 +7,8 @@ authors = ["jakub-figat <jakub.figat@neontri.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 chalice = "^1.27.0"
+SQLAlchemy = "^1.4.36"
+pydantic = "^1.9.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"
