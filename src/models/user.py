@@ -7,15 +7,16 @@ from src.models.abstract import DynamoDBBaseModel
 
 class User(DynamoDBBaseModel):
     email: str
+    refresh_token_jtis: list[str] = Field(default_factory=list, unique_items=True)
 
     @classmethod
     def from_item(cls, item: dict[str, Any]) -> "User":
         _, email = item["PK"].split("#")
-        return cls(email=email)
+        return cls(email=email, refresh_token_jtis=item.get("refresh_token_jtis"))
 
     def to_item(self) -> dict[str, Any]:
         key = self.pk
-        return {"PK": key, "SK": key}
+        return {"PK": key, "SK": key, "refresh_token_jtis": self.refresh_token_jtis}
 
     @property
     def pk(self) -> str:

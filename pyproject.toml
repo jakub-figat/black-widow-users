@@ -13,6 +13,7 @@ boto3 = "^1.22.9"
 mypy-boto3-dynamodb = "^1.22.8"
 passlib = "^1.7.4"
 bcrypt = "^3.2.2"
+PyJWT = "^2.3.0"
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"
