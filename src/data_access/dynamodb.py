@@ -15,6 +15,7 @@ from src.settings import settings
 SK = TypeVar("SK")
 
 
+# pylint: disable=arguments-differ
 class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[str, DynamoDBBaseModel], ABC):
     def __init__(self, table_name: str) -> None:
         dynamodb: DynamoDBServiceResource = boto3.resource(
@@ -30,10 +31,8 @@ class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[str, DynamoDBBaseModel]
     def _model(self) -> Type[DynamoDBBaseModel]:
         raise NotImplementedError
 
-    def get(self, *, pk: PK, **kwargs) -> Optional[DynamoDBBaseModel]:
-        key = {"PK": pk}
-        if (sk := kwargs.get("sk")) is not None:
-            key["SK"] = sk
+    def get(self, pk: PK, sk: SK, *args, **kwargs) -> Optional[DynamoDBBaseModel]:
+        key = {"PK": pk, "SK": sk}
 
         response = self._table.get_item(Key=key)
         if (item := response.get("Item")) is not None:
@@ -66,10 +65,8 @@ class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[str, DynamoDBBaseModel]
 
         return models
 
-    def delete(self, *, pk: PK, **kwargs) -> None:
-        key = {"PK": pk}
-        if (sk := kwargs.get("sk")) is not None:
-            key["SK"] = sk
+    def delete(self, pk: PK, sk: SK, *args, **kwargs) -> None:
+        key = {"PK": pk, "SK": sk}
 
         try:
             self._table.delete_item(Key=key, ConditionExpression="attribute_exists(SK)")

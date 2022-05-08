@@ -15,7 +15,7 @@ class AbstractDataAccess(Generic[PK, Model], ABC):
         pass
 
     @abstractmethod
-    def get(self, *, pk: PK, **kwargs) -> Optional[Model]:
+    def get(self, pk: PK, *args, **kwargs) -> Optional[Model]:
         raise NotImplementedError
 
     @abstractmethod
@@ -27,5 +27,5 @@ class AbstractDataAccess(Generic[PK, Model], ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def delete(self, *, pk: PK, **kwargs) -> bool:
+    def delete(self, pk: PK, *args, **kwargs) -> bool:
         raise NotImplementedError
