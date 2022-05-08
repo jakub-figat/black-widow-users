@@ -2,8 +2,10 @@ import random
 
 import boto3
 import pytest
+from chalice.test import Client
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource, Table
 
+from app import app
 from src.settings import settings
 
 
@@ -47,3 +49,9 @@ def dynamodb_testcase_table(dynamodb_test_table: Table) -> Table:
     with dynamodb_test_table.batch_writer() as batch:
         for item in scan["Items"]:
             batch.delete_item(Key={"PK": item["PK"], "SK": item["SK"]})
+
+
+@pytest.fixture
+def test_client() -> Client:
+    with Client(app=app) as client:
+        yield client

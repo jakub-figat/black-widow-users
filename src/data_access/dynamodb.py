@@ -55,6 +55,7 @@ class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[str, DynamoDBBaseModel]
                 raise AlreadyExists(
                     f"{model.__class__.__name__} with PK={model.pk} and SK={model.sk} already exists"
                 ) from error
+            raise error
 
         return model
 
@@ -73,3 +74,4 @@ class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[str, DynamoDBBaseModel]
         except ClientError as error:
             if error.response["Error"]["Code"] == "ConditionalCheckFailedException":
                 raise DoesNotExist(f"Item with PK={pk} and SK={sk} does not exist") from error
+            raise error

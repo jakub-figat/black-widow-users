@@ -1,5 +1,5 @@
 strictness: medium
-test-warnings: true
+test-warnings: false
 max-line-length: 119
 
 ignore-paths:

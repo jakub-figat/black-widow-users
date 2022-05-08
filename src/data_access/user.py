@@ -21,5 +21,6 @@ class UserDynamoDBDataAccess(DynamoDBDataAccess[str]):
         except ClientError as error:
             if error.response["Error"]["Code"] == "ConditionalCheckFailedException":
                 raise AlreadyExists(f"User with email {email} already exists") from error
+            raise error
 
         return User(email=email)
