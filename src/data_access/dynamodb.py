@@ -3,9 +3,11 @@ from typing import Generic, Optional, Type, TypeVar
 
 import boto3
 from boto3.dynamodb.conditions import Key
+from botocore.exceptions import ClientError
 from mypy_boto3_dynamodb import DynamoDBServiceResource
 
 from src.data_access.abstract import PK, AbstractDataAccess
+from src.data_access.exceptions import AlreadyExists, DoesNotExist
 from src.models.abstract import DynamoDBBaseModel
 from src.settings import settings
 
@@ -28,8 +30,10 @@ class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[str, DynamoDBBaseModel]
     def _model(self) -> Type[DynamoDBBaseModel]:
         raise NotImplementedError
 
-    def get(self, *, pk: PK, sk: SK) -> Optional[DynamoDBBaseModel]:
-        key = {"PK": pk, "SK": sk}
+    def get(self, *, pk: PK, **kwargs) -> Optional[DynamoDBBaseModel]:
+        key = {"PK": pk}
+        if (sk := kwargs.get("sk")) is not None:
+            key["SK"] = sk
 
         response = self._table.get_item(Key=key)
         if (item := response.get("Item")) is not None:
@@ -41,10 +45,18 @@ class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[str, DynamoDBBaseModel]
         expression = Key("PK").eq(pk)
 
         items = self._table.query(KeyConditionExpression=expression)["Items"]
-        return [self._model(**item) for item in items]
+        models = [self._model.from_item(item=item) for item in items]
+        return models
 
     def create(self, *, model: DynamoDBBaseModel) -> DynamoDBBaseModel:
-        self._table.put_item(Item=model.to_item(), ConditionExpression="attribute_not_exists(SK)")
+        try:
+            self._table.put_item(Item=model.to_item(), ConditionExpression="attribute_not_exists(SK)")
+        except ClientError as error:
+            if error.response["Error"]["Code"] == "ConditionalCheckFailedException":
+                raise AlreadyExists(
+                    f"{model.__class__.__name__} with PK={model.pk} and SK={model.sk} already exists"
+                ) from error
+
         return model
 
     def create_many(self, *, models: list[DynamoDBBaseModel]) -> list[DynamoDBBaseModel]:
@@ -54,6 +66,13 @@ class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[str, DynamoDBBaseModel]
 
         return models
 
-    def delete(self, *, pk: PK, sk: SK) -> None:
-        key = {"PK": pk, "SK": sk}
-        self._table.delete_item(Key=key, ConditionExpression="attribute_exists(SK)")
+    def delete(self, *, pk: PK, **kwargs) -> None:
+        key = {"PK": pk}
+        if (sk := kwargs.get("sk")) is not None:
+            key["SK"] = sk
+
+        try:
+            self._table.delete_item(Key=key, ConditionExpression="attribute_exists(SK)")
+        except ClientError as error:
+            if error.response["Error"]["Code"] == "ConditionalCheckFailedException":
+                raise DoesNotExist(f"Item with PK={pk} and SK={sk} does not exist") from error

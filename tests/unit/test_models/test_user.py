@@ -1,0 +1,36 @@
+import pytest
+
+from src.models.user import User, UserRegisterInput
+
+
+@pytest.mark.parametrize(
+    "user,expected_item",
+    [
+        (User(email="asdasd@op.pl"), {"PK": "user#asdasd@op.pl", "SK": "user#asdasd@op.pl"}),
+        (User(email="abcdefg@op.pl"), {"PK": "user#abcdefg@op.pl", "SK": "user#abcdefg@op.pl"}),
+    ],
+)
+def test_user_model_to_item(user: User, expected_item: dict[str, str]) -> None:
+    assert user.to_item() == expected_item
+
+
+@pytest.mark.parametrize(
+    "item,expected_model",
+    [
+        ({"PK": "user#asdasd@op.pl", "SK": "user#asdasd@op.pl"}, User(email="asdasd@op.pl")),
+        ({"PK": "user#onetwothree@op.pl", "SK": "user#onetwothree@op.pl"}, User(email="onetwothree@op.pl")),
+    ],
+)
+def test_user_model_from_item(item: dict[str, str], expected_model: User) -> None:
+    assert User.from_item(item=item) == expected_model
+
+
+@pytest.mark.parametrize(
+    "password,password_again",
+    [("abcdefg12345", "abcdefgh1234555"), ("aljsdadj312", "alskjdalsaa"), ("asdfghjkla", "anqwajdhas67das8d")],
+)
+def test_user_register_input_raises_value_error_when_passwords_do_not_match(
+    password: str, password_again: str
+) -> None:
+    with pytest.raises(ValueError):
+        UserRegisterInput(email="testemail@test.test", password=password, password_again=password_again)

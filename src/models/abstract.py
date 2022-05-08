@@ -13,3 +13,13 @@ class DynamoDBBaseModel(BaseModel, ABC):
     @abstractmethod
     def to_item(self) -> dict[str, Any]:
         raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def pk(self) -> str:
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def sk(self) -> str:
+        raise NotImplementedError

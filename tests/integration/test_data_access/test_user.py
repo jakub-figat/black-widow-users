@@ -1,6 +1,7 @@
 import pytest
 from mypy_boto3_dynamodb.service_resource import Table
 
+from src.data_access.exceptions import AlreadyExists, DoesNotExist
 from src.data_access.user import UserDynamoDBDataAccess
 from src.models.user import User
 
@@ -34,11 +35,24 @@ def test_dynamodb_user_data_access_can_get_user(user_data_access_with_user_inser
     assert user == User(email="stach@op.pl")
 
 
+def test_dynamodb_user_data_access_returns_none_when_user_does_not_exist(
+    user_data_access: UserDynamoDBDataAccess,
+) -> None:
+    assert user_data_access.get(pk="user#doesnotexist", sk="user#doesnotexist") is None
+
+
 def test_dynamodb_user_data_access_can_create_user(user_data_access: UserDynamoDBDataAccess) -> None:
     user = User(email="stachecki@op.pl")
     user_created = user_data_access.create(model=user)
 
     assert user == user_created
+
+
+def test_dynamodb_user_data_access_raises_already_exists_if_email_exists(
+    user_data_access_with_user_inserted: UserDynamoDBDataAccess,
+) -> None:
+    with pytest.raises(AlreadyExists):
+        user_data_access_with_user_inserted.create(model=User(email="stach@op.pl"))
 
 
 def test_dynamodb_user_data_access_can_create_many_users(user_data_access: UserDynamoDBDataAccess) -> None:
@@ -60,3 +74,26 @@ def test_dynamodb_user_data_access_can_delete_user(
 ) -> None:
     user_data_access_with_user_inserted.delete(pk="user#stach@op.pl", sk="user#stach@op.pl")
     assert user_data_access_with_user_inserted.get(pk="user#stach@op.pl", sk="user#stach@op.pl") is None
+
+
+def test_dynamodb_user_data_access_raises_does_not_exist_when_deleting_not_existing_item(
+    user_data_access: UserDynamoDBDataAccess,
+) -> None:
+    with pytest.raises(DoesNotExist):
+        user_data_access.delete(pk="abc", sk="def")
+
+
+def test_dynamodb_user_data_access_can_register_user(user_data_access: UserDynamoDBDataAccess) -> None:
+    user = user_data_access.create_user_with_password(email="register@op.pl", password="password1234567")
+
+    user_from_db = user_data_access.get(pk="user#register@op.pl", sk="user#register@op.pl")
+    assert user_from_db == user
+
+
+def test_dynamodb_user_data_access_raises_already_exists_when_email_is_occupied(
+    user_data_access_with_user_inserted: UserDynamoDBDataAccess,
+) -> None:
+    with pytest.raises(AlreadyExists):
+        user_data_access_with_user_inserted.create_user_with_password(
+            email="stach@op.pl", password="doesnotmakeadifference"
+        )

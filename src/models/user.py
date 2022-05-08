@@ -14,8 +14,16 @@ class User(DynamoDBBaseModel):
         return cls(email=email)
 
     def to_item(self) -> dict[str, Any]:
-        key = f"user#{self.email}"
+        key = self.pk
         return {"PK": key, "SK": key}
+
+    @property
+    def pk(self) -> str:
+        return f"user#{self.email}"
+
+    @property
+    def sk(self) -> str:
+        return f"user#{self.email}"
 
 
 class UserRegisterInput(BaseModel):
