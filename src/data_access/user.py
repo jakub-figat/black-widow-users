@@ -27,9 +27,9 @@ class UserDynamoDBDataAccess(DynamoDBDataAccess[str]):
 
     def check_password(self, email: str, password: str) -> bool:
         user_key = f"user#{email}"
-        user_item = self._table.get_item({"PK": user_key, "SK": user_key})
+        response = self._table.get_item(Key={"PK": user_key, "SK": user_key})
 
-        if user_item is None:
+        if (user_item := response.get("Item")) is None:
             raise DoesNotExist(f"User with email {email} does not exist")
 
         return verify_password(password, user_item["password"])

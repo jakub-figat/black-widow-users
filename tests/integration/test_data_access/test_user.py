@@ -12,6 +12,13 @@ def user_data_access(dynamodb_testcase_table: Table) -> UserDynamoDBDataAccess:
 
 
 @pytest.fixture
+def user_data_access_with_user_with_password(dynamodb_testcase_table: Table) -> UserDynamoDBDataAccess:
+    data_access = UserDynamoDBDataAccess(table_name=dynamodb_testcase_table.table_name)
+    data_access.create_user_with_password(email="janusz123@aa.pl", password="password12345")
+    return data_access
+
+
+@pytest.fixture
 def user_data_access_with_user_inserted(dynamodb_testcase_table: Table) -> UserDynamoDBDataAccess:
     data_access = UserDynamoDBDataAccess(table_name=dynamodb_testcase_table.table_name)
     data_access.create(model=User(email="stach@op.pl"))
@@ -97,3 +104,16 @@ def test_dynamodb_user_data_access_raises_already_exists_when_email_is_occupied(
         user_data_access_with_user_inserted.create_user_with_password(
             email="stach@op.pl", password="doesnotmakeadifference"
         )
+
+
+def test_dynamodb_user_data_access_can_check_password(
+    user_data_access_with_user_with_password: UserDynamoDBDataAccess,
+) -> None:
+    assert user_data_access_with_user_with_password.check_password(email="janusz123@aa.pl", password="password12345")
+
+
+def test_dynamodb_user_data_access_raises_does_not_exist_when_checking_not_existing_user_password(
+    user_data_access: UserDynamoDBDataAccess,
+) -> None:
+    with pytest.raises(DoesNotExist):
+        user_data_access.check_password(email="doesnotexist", password="doesntmatter")

@@ -11,7 +11,10 @@ from src.models.user import User, UserRegisterInput
     ],
 )
 def test_user_model_to_item(user: User, expected_item: dict[str, str]) -> None:
-    assert user.to_item() == expected_item
+    item = user.to_item()
+
+    assert item["PK"] == expected_item["PK"]
+    assert item["SK"] == expected_item["SK"]
 
 
 @pytest.mark.parametrize(
@@ -22,7 +25,8 @@ def test_user_model_to_item(user: User, expected_item: dict[str, str]) -> None:
     ],
 )
 def test_user_model_from_item(item: dict[str, str], expected_model: User) -> None:
-    assert User.from_item(item=item) == expected_model
+    user = User.from_item(item=item)
+    assert user.email == expected_model.email
 
 
 @pytest.mark.parametrize(

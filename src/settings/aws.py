@@ -2,6 +2,6 @@ from pydantic import BaseSettings
 
 
 class AWSSettings(BaseSettings):
-    access_key: str
-    secret_key: str
+    aws_access_key: str
+    aws_secret_key: str
     region: str = "eu-central-1"

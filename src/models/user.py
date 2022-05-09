@@ -12,7 +12,7 @@ class User(DynamoDBBaseModel):
     @classmethod
     def from_item(cls, item: dict[str, Any]) -> "User":
         _, email = item["PK"].split("#")
-        return cls(email=email, refresh_token_jtis=item.get("refresh_token_jtis"))
+        return cls(email=email, refresh_token_jtis=item.get("refresh_token_jtis", []))
 
     def to_item(self) -> dict[str, Any]:
         key = self.pk

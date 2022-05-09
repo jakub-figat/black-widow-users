@@ -6,15 +6,6 @@ from mypy_boto3_dynamodb.service_resource import Table
 
 from src.data_access.user import UserDynamoDBDataAccess
 from src.models.user import User
-from src.services import user_dynamodb_data_access
-
-
-@pytest.fixture(scope="session", autouse=True)
-def override_table(dynamodb_test_table: Table) -> None:
-    prev_table = user_dynamodb_data_access._table
-    user_dynamodb_data_access._table = dynamodb_test_table
-    yield
-    user_dynamodb_data_access._table = prev_table
 
 
 @pytest.fixture

@@ -21,8 +21,8 @@ class DynamoDBDataAccess(Generic[SK], AbstractDataAccess[str, DynamoDBBaseModel]
         dynamodb: DynamoDBServiceResource = boto3.resource(
             "dynamodb",
             region_name=settings.region,
-            aws_access_key_id=settings.access_key,
-            aws_secret_access_key=settings.secret_key,
+            aws_access_key_id=settings.aws_access_key,
+            aws_secret_access_key=settings.aws_secret_key,
         )
         self._table = dynamodb.Table(table_name)
 
