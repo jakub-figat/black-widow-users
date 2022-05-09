@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 import pytest
 from mypy_boto3_dynamodb.service_resource import Table
 
@@ -22,6 +24,13 @@ def user_data_access_with_user_with_password(dynamodb_testcase_table: Table) -> 
 def user_data_access_with_user_inserted(dynamodb_testcase_table: Table) -> UserDynamoDBDataAccess:
     data_access = UserDynamoDBDataAccess(table_name=dynamodb_testcase_table.table_name)
     data_access.create(model=User(email="stach@op.pl"))
+    return data_access
+
+
+@pytest.fixture
+def user_data_access_with_user_with_refresh_token_jti(dynamodb_testcase_table: Table) -> UserDynamoDBDataAccess:
+    data_access = UserDynamoDBDataAccess(table_name=dynamodb_testcase_table.table_name)
+    data_access.create(model=User(email="stach@op.pl", refresh_token_jtis=["fakejti"]))
     return data_access
 
 
@@ -117,3 +126,22 @@ def test_dynamodb_user_data_access_raises_does_not_exist_when_checking_not_exist
 ) -> None:
     with pytest.raises(DoesNotExist):
         user_data_access.check_password(email="doesnotexist", password="doesntmatter")
+
+
+def test_dynamodb_user_data_access_can_add_refresh_token_jti(
+    user_data_access_with_user_inserted: UserDynamoDBDataAccess,
+) -> None:
+    jti = str(uuid4())
+    user_data_access_with_user_inserted.add_refresh_token_jti(User(email="stach@op.pl"), refresh_token_jti=jti)
+    user: User = user_data_access_with_user_inserted.get(pk="user#stach@op.pl", sk="user#stach@op.pl")
+
+    assert user.refresh_token_jtis == [jti]
+
+
+def test_dynamodb_user_data_access_can_remove_refresh_token_jtis(
+    user_data_access_with_user_with_refresh_token_jti: UserDynamoDBDataAccess,
+) -> None:
+    user_data_access_with_user_with_refresh_token_jti.delete_user_refresh_token_jtis(user=User(email="stach@op.pl"))
+    user: User = user_data_access_with_user_with_refresh_token_jti.get(pk="user#stach@op.pl", sk="user#stach@op.pl")
+
+    assert user.refresh_token_jtis == []

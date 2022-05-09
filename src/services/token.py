@@ -47,8 +47,8 @@ class TokenService:
     def parse_token_from_header(cls, header: str) -> str:
         try:
             prefix, token = header.split(" ", 1)
-        except ValueError:
-            raise BadRequestError("Invalid bearer token")
+        except ValueError as error:
+            raise BadRequestError("Invalid bearer token") from error
 
         if prefix != "Bearer":
             raise BadRequestError("Invalid bearer token")
@@ -81,7 +81,7 @@ class TokenService:
 
     def create_token_pair_by_login(self, login_input: UserLoginInput) -> TokenPairOutput:
         if not self._user_data_access.check_password(**login_input.dict()):
-            raise BadRequestError(f"Given credentials are invalid")
+            raise BadRequestError("Given credentials are invalid")
 
         token_pair = self.create_token_pair(subject=login_input.email)
         return TokenPairOutput(**token_pair)
