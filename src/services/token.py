@@ -36,7 +36,7 @@ class TokenService:
         return jwt.encode(payload=token_payload, key=settings.secret_key)
 
     @classmethod
-    def _validate_token_payload(cls, payload: dict[str, Any], token_type: TokenType) -> None:
+    def validate_token_payload(cls, payload: dict[str, Any], token_type: TokenType) -> None:
         if payload["type"] != token_type.value:
             raise BadRequestError("Invalid token type")
 
@@ -49,6 +49,9 @@ class TokenService:
             prefix, token = header.split(" ", 1)
         except ValueError as error:
             raise BadRequestError("Invalid bearer token") from error
+
+        if not token.strip():
+            raise BadRequestError("Invalid bearer token")
 
         if prefix != "Bearer":
             raise BadRequestError("Invalid bearer token")
@@ -64,12 +67,12 @@ class TokenService:
 
     @classmethod
     def decode_token(cls, token: str) -> dict[str, Any]:
-        return jwt.decode(jwt=token, key=settings.secret_key)
+        return jwt.decode(jwt=token, key=settings.secret_key, algorithms=["HS256"])
 
     def authenticate_user_from_header(self, header: str) -> User:
         token = self.parse_token_from_header(header=header)
         payload = self.decode_token(token=token)
-        self._validate_token_payload(payload=payload, token_type=TokenType.ACCESS)
+        self.validate_token_payload(payload=payload, token_type=TokenType.ACCESS)
 
         user_key = f"user#{payload['sub']}"
         user: Optional[User] = self._user_data_access.get(pk=user_key, sk=user_key)
@@ -84,11 +87,13 @@ class TokenService:
             raise BadRequestError("Given credentials are invalid")
 
         token_pair = self.create_token_pair(subject=login_input.email)
+        self.save_user_refresh_token(refresh_token=token_pair["refresh_token"], user=User(email=login_input.email))
+
         return TokenPairOutput(**token_pair)
 
     def create_token_pair_by_refresh(self, refresh_token: str) -> TokenPairOutput:
         payload = self.decode_token(token=refresh_token)
-        self._validate_token_payload(payload=payload, token_type=TokenType.REFRESH)
+        self.validate_token_payload(payload=payload, token_type=TokenType.REFRESH)
 
         user_key = f"user#{payload['sub']}"
         user: Optional[User] = self._user_data_access.get(pk=user_key, sk=user_key)
@@ -97,7 +102,13 @@ class TokenService:
             raise BadRequestError("Invalid refresh token")
 
         token_pair = self.create_token_pair(subject=user.email)
+        self.save_user_refresh_token(refresh_token=token_pair["refresh_token"], user=user)
+
         return TokenPairOutput(**token_pair)
+
+    def save_user_refresh_token(self, refresh_token: str, user: User) -> None:
+        jti = self.decode_token(token=refresh_token)["jti"]
+        self._user_data_access.add_refresh_token_jti(user=user, refresh_token_jti=jti)
 
     def revoke_user_refresh_tokens(self, user: User) -> None:
         self._user_data_access.delete_user_refresh_token_jtis(user=user)

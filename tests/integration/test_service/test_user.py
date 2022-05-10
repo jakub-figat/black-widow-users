@@ -1,15 +1,9 @@
 import pytest
 from chalice import BadRequestError
-from mypy_boto3_dynamodb.service_resource import Table
 
 from src.data_access.user import UserDynamoDBDataAccess
 from src.models.user import UserRegisterInput
 from src.services.user import UserService
-
-
-@pytest.fixture
-def user_dynamodb_data_access(dynamodb_testcase_table: Table) -> UserDynamoDBDataAccess:
-    return UserDynamoDBDataAccess(table_name=dynamodb_testcase_table.table_name)
 
 
 @pytest.fixture

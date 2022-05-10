@@ -14,10 +14,13 @@ app-bash:
 	docker-compose run --rm app bash
 
 unit-test:
-	docker-compose run --rm app bash -c "./scripts/unit-test.sh"
+	docker-compose run --rm app bash -c "coverage run --source=src -m pytest tests/unit/"
 
 integration-test:
-	docker-compose run --rm app bash -c "./scripts/integration-test.sh"
+	docker-compose run --rm app bash -c "coverage run --source=src -m pytest tests/integration/"
+
+test:
+	docker-compose run --rm app bash -c "coverage run --source=src -m pytest tests/"
 
 cov-report:
 	docker-compose run --rm app bash -c "coverage report"
