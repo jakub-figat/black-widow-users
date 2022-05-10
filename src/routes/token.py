@@ -1,8 +1,9 @@
 from chalice import BadRequestError, Response, UnauthorizedError
 
 from app import app
-from src.models.user import UserLoginInput
+from src.models.user import User, UserLoginInput
 from src.services import token_service
+from src.utils.authorization import jwt_auth
 
 
 @app.route("/tokens", methods=["POST"])
@@ -17,13 +18,12 @@ def get_token_pair_by_refresh() -> dict[str, str]:
         raise BadRequestError("No refresh token specified in Authorization header")
 
     token = token_service.parse_token_from_header(header=auth_header)
-    return token_service.create_token_pair_by_refresh(refresh_token=token)
+    return token_service.create_token_pair_by_refresh(refresh_token=token).dict()
 
 
-@app.route("/tokens/revoke")
+@app.route("/tokens/revoke", methods=["POST"], authorizer=jwt_auth)
 def revoke_refresh_tokens() -> Response:
-    if (user := app.current_request.user) is None:
-        raise UnauthorizedError("Authentication credentials were not provided")
+    email = app.current_request.context["authorizer"]["principalId"]
 
-    token_service.revoke_user_refresh_tokens(user=user)
+    token_service.revoke_user_refresh_tokens(user=User(email=email))
     return Response(body=None, status_code=204)

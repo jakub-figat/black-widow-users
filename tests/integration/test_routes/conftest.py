@@ -5,7 +5,7 @@ from src.services import user_dynamodb_data_access
 
 
 @pytest.fixture(scope="session", autouse=True)
-def override_table(dynamodb_test_table: Table) -> None:
+def override_user_data_access_table(dynamodb_test_table: Table) -> None:
     prev_table = user_dynamodb_data_access._table
     user_dynamodb_data_access._table = dynamodb_test_table
     yield
