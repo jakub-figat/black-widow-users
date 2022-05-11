@@ -248,4 +248,4 @@ artifacts/
 celerybeat.pid
 celerybeat-schedule
 
-backend/invoices/
+.chalice/config.json

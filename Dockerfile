@@ -10,6 +10,8 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /app
 
+RUN apt-get update -yq && apt-get install jq -yq
+
 RUN pip install poetry=="$POETRY_VERSION"
 
 COPY pyproject.toml poetry.lock ./
@@ -17,5 +19,3 @@ COPY pyproject.toml poetry.lock ./
 RUN poetry install --no-interaction --no-ansi
 
 COPY . .
-
-RUN chmod +x -R ./scripts

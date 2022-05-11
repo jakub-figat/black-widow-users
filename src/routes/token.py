@@ -1,14 +1,21 @@
-from chalice import BadRequestError, Response, UnauthorizedError
+from chalice import BadRequestError, Response
+from pydantic import ValidationError
 
 from app import app
 from src.models.user import User, UserLoginInput
 from src.services import token_service
 from src.utils.authorization import jwt_auth
+from src.utils.errors import get_response_from_pydantic_error
 
 
 @app.route("/tokens", methods=["POST"])
 def get_token_pair() -> dict[str, str]:
-    login_input = UserLoginInput(**app.current_request.json_body)
+    json_body = app.current_request.json_body or {}
+    try:
+        login_input = UserLoginInput(**json_body)
+    except ValidationError as error:
+        return get_response_from_pydantic_error(error=error)
+
     return token_service.create_token_pair_by_login(login_input=login_input).dict()
 
 
