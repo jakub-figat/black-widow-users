@@ -14,13 +14,13 @@ app-bash:
 	docker-compose run --rm app bash
 
 unit-test:
-	docker-compose run --rm app bash -c "coverage run --source=src -m pytest tests/unit/"
+	docker-compose run --rm app bash -c "coverage run --source=chalicelib -m pytest tests/unit/"
 
 integration-test:
-	docker-compose run --rm app bash -c "coverage run --source=src -m pytest tests/integration/"
+	docker-compose run --rm app bash -c "coverage run --source=chalicelib -m pytest tests/integration/"
 
 test:
-	docker-compose run --rm app bash -c "coverage run --source=src -m pytest tests/"
+	docker-compose run --rm app bash -c "coverage run --source=chalicelib -m pytest tests/"
 
 cov-report:
 	docker-compose run --rm app bash -c "coverage report"

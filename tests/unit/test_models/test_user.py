@@ -1,6 +1,6 @@
 import pytest
 
-from src.models.user import User, UserRegisterInput
+from chalicelib.models.user import User, UserRegisterInput
 
 
 @pytest.mark.parametrize(

@@ -3,9 +3,9 @@ from uuid import uuid4
 import pytest
 from mypy_boto3_dynamodb.service_resource import Table
 
-from src.data_access.exceptions import AlreadyExists, DoesNotExist
-from src.data_access.user import UserDynamoDBDataAccess
-from src.models.user import User
+from chalicelib.data_access.exceptions import AlreadyExists, DoesNotExist
+from chalicelib.data_access.user import UserDynamoDBDataAccess
+from chalicelib.models.user import User
 
 
 @pytest.fixture

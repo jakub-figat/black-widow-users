@@ -2,7 +2,7 @@ from chalice import AuthResponse
 from chalice.app import AuthRequest
 
 from app import app
-from src.services import token_service
+from chalicelib.services import token_service
 
 
 @app.authorizer()

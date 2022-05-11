@@ -2,9 +2,9 @@ from chalice import Response
 from pydantic import ValidationError
 
 from app import app
-from src.models.user import UserRegisterInput
-from src.services import user_service
-from src.utils.errors import get_response_from_pydantic_error
+from chalicelib.models.user import UserRegisterInput
+from chalicelib.services import user_service
+from chalicelib.utils.errors import get_response_from_pydantic_error
 
 
 @app.route("/users/register", methods=["POST"])

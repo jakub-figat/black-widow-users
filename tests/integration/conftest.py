@@ -6,7 +6,7 @@ from chalice.test import Client
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource, Table
 
 from app import app
-from src.settings import settings
+from chalicelib.settings import settings
 
 
 @pytest.fixture(scope="session")

@@ -6,10 +6,10 @@ import pytest
 from chalice.test import Client
 from mypy_boto3_dynamodb.service_resource import Table
 
-from src.enums import TokenType
-from src.models.user import User, UserRegisterInput
-from src.services import token_service, user_service
-from src.settings import settings
+from chalicelib.enums import TokenType
+from chalicelib.models.user import User, UserRegisterInput
+from chalicelib.services import token_service, user_service
+from chalicelib.settings import settings
 
 
 @pytest.fixture

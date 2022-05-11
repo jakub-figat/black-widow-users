@@ -5,11 +5,11 @@ import jwt
 import pytest
 from chalice import BadRequestError
 
-from src.data_access.user import UserDynamoDBDataAccess
-from src.enums import TokenType
-from src.models.user import User, UserLoginInput
-from src.services import TokenService
-from src.settings import settings
+from chalicelib.data_access.user import UserDynamoDBDataAccess
+from chalicelib.enums import TokenType
+from chalicelib.models.user import User, UserLoginInput
+from chalicelib.services import TokenService
+from chalicelib.settings import settings
 
 
 @pytest.fixture

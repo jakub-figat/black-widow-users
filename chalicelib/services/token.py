@@ -5,11 +5,11 @@ from uuid import uuid4
 import jwt
 from chalice import BadRequestError
 
-from src.data_access.user import UserDynamoDBDataAccess
-from src.enums import TokenType
-from src.models.token import TokenPairOutput
-from src.models.user import User, UserLoginInput
-from src.settings import settings
+from chalicelib.data_access.user import UserDynamoDBDataAccess
+from chalicelib.enums import TokenType
+from chalicelib.models.token import TokenPairOutput
+from chalicelib.models.user import User, UserLoginInput
+from chalicelib.settings import settings
 
 
 class TokenService:

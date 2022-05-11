@@ -1,7 +1,7 @@
 import pytest
 from mypy_boto3_dynamodb.service_resource import Table
 
-from src.data_access.user import UserDynamoDBDataAccess
+from chalicelib.data_access.user import UserDynamoDBDataAccess
 
 
 @pytest.fixture

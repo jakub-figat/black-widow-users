@@ -1,9 +1,9 @@
 import pytest
 from chalice import BadRequestError
 
-from src.data_access.user import UserDynamoDBDataAccess
-from src.models.user import UserRegisterInput
-from src.services.user import UserService
+from chalicelib.data_access.user import UserDynamoDBDataAccess
+from chalicelib.models.user import UserRegisterInput
+from chalicelib.services.user import UserService
 
 
 @pytest.fixture

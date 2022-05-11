@@ -4,8 +4,8 @@ import pytest
 from chalice.test import Client
 from mypy_boto3_dynamodb.service_resource import Table
 
-from src.data_access.user import UserDynamoDBDataAccess
-from src.models.user import User
+from chalicelib.data_access.user import UserDynamoDBDataAccess
+from chalicelib.models.user import User
 
 
 @pytest.fixture

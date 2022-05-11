@@ -2,7 +2,7 @@ from typing import Any
 
 from pydantic import BaseModel, EmailStr, Field, validator
 
-from src.models.abstract import DynamoDBBaseModel
+from chalicelib.models.abstract import DynamoDBBaseModel
 
 
 class User(DynamoDBBaseModel):

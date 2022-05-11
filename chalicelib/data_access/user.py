@@ -2,10 +2,10 @@ from typing import Optional, Type
 
 from botocore.exceptions import ClientError
 
-from src.data_access.dynamodb import DynamoDBDataAccess
-from src.data_access.exceptions import AlreadyExists, DoesNotExist
-from src.models.user import User
-from src.utils.password import hash_password, verify_password
+from chalicelib.data_access.dynamodb import DynamoDBDataAccess
+from chalicelib.data_access.exceptions import AlreadyExists, DoesNotExist
+from chalicelib.models.user import User
+from chalicelib.utils.password import hash_password, verify_password
 
 
 class UserDynamoDBDataAccess(DynamoDBDataAccess[str]):

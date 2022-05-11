@@ -359,6 +359,17 @@ python-versions = ">=3.6"
 typing-extensions = ">=4.1.0"
 
 [[package]]
+name = "mypy-boto3-s3"
+version = "1.22.8"
+description = "Type annotations for boto3.S3 1.22.8 service generated with mypy-boto3-builder 7.5.12"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+typing-extensions = ">=4.1.0"
+
+[[package]]
 name = "mypy-extensions"
 version = "0.4.3"
 description = "Experimental type system extensions for programs checked with the mypy typechecker."
@@ -836,7 +847,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "c35285d43171e15098b72c42ebb643556866d5f3764514cc885988f270322ebd"
+content-hash = "418d417095ce4f2f5442a8bfe7a507a592a042e7c6584802eb5dc6ba14442d88"
 
 [metadata.files]
 ansicon = [
@@ -1163,6 +1174,10 @@ mccabe = [
 mypy-boto3-dynamodb = [
     {file = "mypy-boto3-dynamodb-1.22.8.post1.tar.gz", hash = "sha256:4665315789203c752926af5564f8e63aaaa622ef1fbfd3ef4cbef6040e6e2e9f"},
     {file = "mypy_boto3_dynamodb-1.22.8.post1-py3-none-any.whl", hash = "sha256:9a13e65b63d48a2b0f13d3dbe99e5eefa9cceb375a84d759a86852d7cccba0fd"},
+]
+mypy-boto3-s3 = [
+    {file = "mypy-boto3-s3-1.22.8.tar.gz", hash = "sha256:06bec797298ab9051b23e8b0f741d68b59529c417041bce204ba240074f31849"},
+    {file = "mypy_boto3_s3-1.22.8-py3-none-any.whl", hash = "sha256:80d8cf71beae3b5333a32e581df429694fa4321dfc25867e0c0374e23de0a0fd"},
 ]
 mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},

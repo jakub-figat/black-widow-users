@@ -2,10 +2,10 @@ from chalice import BadRequestError, Response
 from pydantic import ValidationError
 
 from app import app
-from src.models.user import User, UserLoginInput
-from src.services import token_service
-from src.utils.authorization import jwt_auth
-from src.utils.errors import get_response_from_pydantic_error
+from chalicelib.models.user import User, UserLoginInput
+from chalicelib.services import token_service
+from chalicelib.utils.authorization import jwt_auth
+from chalicelib.utils.errors import get_response_from_pydantic_error
 
 
 @app.route("/tokens", methods=["POST"])

@@ -1,8 +1,8 @@
 from chalice import BadRequestError
 
-from src.data_access.exceptions import AlreadyExists
-from src.data_access.user import UserDynamoDBDataAccess
-from src.models.user import User, UserRegisterInput
+from chalicelib.data_access.exceptions import AlreadyExists
+from chalicelib.data_access.user import UserDynamoDBDataAccess
+from chalicelib.models.user import User, UserRegisterInput
 
 
 class UserService:
