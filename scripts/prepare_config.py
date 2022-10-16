@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     known_args, *_ = parser.parse_known_args()
 
-    with open(known_args.config_file, "r") as json_file:
+    with open(known_args.config_file, "r", encoding="utf-8") as json_file:
         config = json.load(json_file)
 
     config["stages"]["dev"]["iam_role_arn"] = known_args.iam_role_arn
@@ -21,5 +21,5 @@ if __name__ == "__main__":
         key, value = entry.split("=")
         config["stages"]["dev"]["environment_variables"][key] = value
 
-    with open(known_args.output_file, "w") as json_file:
+    with open(known_args.output_file, "w", encoding="utf-8") as json_file:
         json.dump(config, json_file, indent=2)
