@@ -252,3 +252,5 @@ celerybeat-schedule
 .chalice/deployments/
 .chalice/deployed/
 requirements.txt
+venv
+

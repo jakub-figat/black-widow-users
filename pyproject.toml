@@ -33,7 +33,7 @@ exclude = '''
   | \.hg
   | \.mypy_cache
   | \.tox
-  | env
+  | venv
   | _build
   | buck-out
   | build
@@ -45,7 +45,7 @@ exclude = '''
 line_length = 119
 lines_after_imports = 2
 profile = "black"
-skip_glob = ["env/*"]
+skip_glob = ["venv/*"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

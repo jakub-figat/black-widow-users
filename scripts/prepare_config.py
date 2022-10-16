@@ -22,4 +22,4 @@ if __name__ == "__main__":
         config["stages"]["dev"]["environment_variables"][key] = value
 
     with open(known_args.output_file, "w") as json_file:
-        json.dump(config, json_file)
+        json.dump(config, json_file, indent=2)

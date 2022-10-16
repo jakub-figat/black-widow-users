@@ -1,5 +1,5 @@
-from pydantic import BaseSettings
+from pydantic import BaseSettings, Field
 
 
 class DynamoDBSettings(BaseSettings):
-    table_name: str
+    dynamodb_table_name: str = Field(..., env="DYNAMODB_TABLE_NAME")

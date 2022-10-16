@@ -4,13 +4,16 @@ format:
 check:
 	docker-compose run --rm app bash -c "prospector ."
 
-build-dev:
+build:
 	docker-compose build
 
-up-dev:
+run:
 	docker-compose up
 
-app-bash:
+deploy:
+	docker-compose run --rm app bash -c "chalice deploy"
+
+bash:
 	docker-compose run --rm app bash
 
 unit-test:

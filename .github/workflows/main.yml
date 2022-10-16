@@ -44,3 +44,6 @@ jobs:
 
       - name: Prepare aws credentials
         run: mkdir -p ~/.aws && printf "[default]\naws_access_key_id={{ secrets.AWS_ACCESS_KEY }\naws_secret_access_key={{ secrets.AWS_SECRET_KEY }}\nregion=eu-central-1"
+
+      - name: Deploy app
+        run: docker run -v requirements.txt:/app/requirements.txt -v ~/.aws:~/.aws -v .chalice/config.json:/app/.chalice/config.json --rm it ${{ env.IMAGE_TAG }} bash -c "chalice deploy"
