@@ -28,14 +28,14 @@ jobs:
         run: docker run --rm -t ${{ env.IMAGE_TAG }} bash -c "prospector ."
 
       - name: Run unit tests
-        run: docker run --rm -t ${{ env.IMAGE_TAG }} bash -c "pytest tests/unit/"
+        run: docker run --rm -e SECRET_KEY={{ secrets.SECRET_KEY }} -e AWS_ACCESS_KEY={{ secrets.AWS_ACCESS_KEY }} -e AWS_SECRET_KEY={{ secrets.AWS_SECRET_KEY }} -e DYNAMODB_TABLE_NAME={{ secrets.DYNAMODB_TABLE_NAME }} -t ${{ env.IMAGE_TAG }} bash -c "pytest tests/unit/"
 
       - name: Run integration tests
-        run: docker run --rm -t ${{ env.IMAGE_TAG }} bash -c "pytest tests/integration/"
+        run: docker run --rm -e SECRET_KEY={{ secrets.SECRET_KEY }} -e AWS_ACCESS_KEY={{ secrets.AWS_ACCESS_KEY }} -e AWS_SECRET_KEY={{ secrets.AWS_SECRET_KEY }} -e DYNAMODB_TABLE_NAME={{ secrets.DYNAMODB_TABLE_NAME }} -t ${{ env.IMAGE_TAG }} bash -c "pytest tests/integration/"
 
       - name: Deploy to AWS
         run: >
-          docker run --rm -e SECRET_KEY={{ secrets.SECRET_KEY }},AWS_ACCESS_KEY={{ secrets.AWS_ACCESS_KEY }},AWS_SECRET_KEY={{ secrets.AWS_SECRET_KEY }},DYNAMODB_TABLE_NAME={{ secrets.DYNAMODB_TABLE_NAME }} -t ${{ env.IMAGE_TAG }} bash -c "
+          docker run --rm -e SECRET_KEY={{ secrets.SECRET_KEY }} -e AWS_ACCESS_KEY={{ secrets.AWS_ACCESS_KEY }} -e AWS_SECRET_KEY={{ secrets.AWS_SECRET_KEY }} -e DYNAMODB_TABLE_NAME={{ secrets.DYNAMODB_TABLE_NAME }} -t ${{ env.IMAGE_TAG }} bash -c "
             python scripts/prepare_config.py --config_file .chalice/config.template.json \
           --output_file .chalice/config.json --iam_role_arn {{ secrets.LAMBDA_ROLE_ARN}} \ 
           --env_variables=secret_key={{ secrets.SECRET_KEY }},aws_access_key={{ secrets.AWS_ACCESS_KEY }},aws_secret_key={{ secrets.AWS_SECRET_KEY }},table_name={{ secrets.DYNAMODB_TABLE_NAME }};
