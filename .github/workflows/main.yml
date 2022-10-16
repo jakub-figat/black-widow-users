@@ -28,10 +28,10 @@ jobs:
         run: docker run --rm -t ${{ env.IMAGE_TAG }} bash -c "prospector ."
 
       - name: Run unit tests
-        run: docker run --rm -e SECRET_KEY={{ secrets.SECRET_KEY }} -e AWS_ACCESS_KEY={{ secrets.AWS_ACCESS_KEY }} -e AWS_SECRET_KEY={{ secrets.AWS_SECRET_KEY }} -e DYNAMODB_TABLE_NAME={{ secrets.DYNAMODB_TABLE_NAME }} -t ${{ env.IMAGE_TAG }} bash -c "pytest tests/unit/"
+        run: docker run --rm -e "SECRET_KEY={{ secrets.SECRET_KEY }}" -e "AWS_ACCESS_KEY={{ secrets.AWS_ACCESS_KEY }}" -e "AWS_SECRET_KEY={{ secrets.AWS_SECRET_KEY }}" -e "DYNAMODB_TABLE_NAME={{ secrets.DYNAMODB_TABLE_NAME }}" -t ${{ env.IMAGE_TAG }} bash -c "pytest tests/unit/"
 
       - name: Run integration tests
-        run: docker run --rm -e SECRET_KEY={{ secrets.SECRET_KEY }} -e AWS_ACCESS_KEY={{ secrets.AWS_ACCESS_KEY }} -e AWS_SECRET_KEY={{ secrets.AWS_SECRET_KEY }} -e DYNAMODB_TABLE_NAME={{ secrets.DYNAMODB_TABLE_NAME }} -t ${{ env.IMAGE_TAG }} bash -c "pytest tests/integration/"
+        run: docker run --rm -e "SECRET_KEY={{ secrets.SECRET_KEY }}" -e "AWS_ACCESS_KEY={{ secrets.AWS_ACCESS_KEY }}" -e "AWS_SECRET_KEY={{ secrets.AWS_SECRET_KEY }}" -e "DYNAMODB_TABLE_NAME={{ secrets.DYNAMODB_TABLE_NAME }}" -t ${{ env.IMAGE_TAG }} bash -c "pytest tests/integration/"
 
       - name: Deploy to AWS
         run: >
