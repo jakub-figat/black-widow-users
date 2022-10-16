@@ -33,17 +33,12 @@ jobs:
       - name: Run integration tests
         run: docker run --rm -t ${{ env.IMAGE_TAG }} bash -c "pytest tests/integration/"
 
-      - name: Prepare chalice config
-        run: >
-          python scripts/prepare_config.py --config_file .chalice/config.template.json \
+      - name: Deploy to AWS
+        - run: >
+          docker run --rm -t ${{ env.IMAGE_TAG }} bash -c "python scripts/prepare_config.py --config_file .chalice/config.template.json \
           --output_file .chalice/config.json --iam_role_arn {{ secrets.LAMBDA_ROLE_ARN}} \ 
-          --env_variables=secret_key={{ secrets.SECRET_KEY }},aws_access_key={{ secrets.AWS_ACCESS_KEY }},aws_secret_key={{ secrets.AWS_SECRET_KEY }},table_name={{ secrets.DYNAMODB_TABLE_NAME }}
+          --env_variables=secret_key={{ secrets.SECRET_KEY }},aws_access_key={{ secrets.AWS_ACCESS_KEY }},aws_secret_key={{ secrets.AWS_SECRET_KEY }},table_name={{ secrets.DYNAMODB_TABLE_NAME }}"
 
-      - name: Export requirements
-        run: poetry export -f requirements.txt --output requirements.txt --without-hashes
-
-      - name: Prepare aws credentials
-        run: mkdir -p ~/.aws && printf "[default]\naws_access_key_id={{ secrets.AWS_ACCESS_KEY }\naws_secret_access_key={{ secrets.AWS_SECRET_KEY }}\nregion=eu-central-1"
-
-      - name: Deploy app
-        run: docker run -v requirements.txt:/app/requirements.txt -v ~/.aws:~/.aws -v .chalice/config.json:/app/.chalice/config.json --rm it ${{ env.IMAGE_TAG }} bash -c "chalice deploy"
+        - run: docker run --rm -t ${{ env.IMAGE_TAG }} bash -c "poetry export -f requirements.txt --output requirements.txt --without-hashes"
+        - run: docker run --rm -t ${{ env.IMAGE_TAG }} bash -c "mkdir -p ~/.aws && printf '[default]\naws_access_key_id={{ secrets.AWS_ACCESS_KEY }\naws_secret_access_key={{ secrets.AWS_SECRET_KEY }}\nregion=eu-central-1'"
+        - run: docker run --rm -t ${{ env.IMAGE_TAG }} bash -c "chalice deploy"
