@@ -34,7 +34,7 @@ jobs:
         run: docker run --rm -t ${{ env.IMAGE_TAG }} bash -c "pytest tests/integration/"
 
       - name: Deploy to AWS
-        - run: >
+        run: >
           docker run --rm -t ${{ env.IMAGE_TAG }} bash -c "
             python scripts/prepare_config.py --config_file .chalice/config.template.json \
           --output_file .chalice/config.json --iam_role_arn {{ secrets.LAMBDA_ROLE_ARN}} \ 
