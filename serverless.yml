@@ -1,0 +1,35 @@
+frameworkVersion: '3'
+service: black-widow-users
+
+provider:
+  name: aws
+  region: eu-central-1
+  runtime: python3.9
+
+
+plugins:
+  - serverless-python-requirements
+  - serverless-offline
+
+custom:
+  pythonRequirements:
+    usePoetry: true
+    dockerizePip: true
+
+
+functions:
+  users:
+    handler: main.handler
+    events:
+      - http:
+          path: /users/register
+          method: post
+      - http:
+          path: /tokens
+          method: post
+      - http:
+          path: /tokens/refresh
+          method: post
+      - http:
+          path: /tokens/revoke
+          method: post

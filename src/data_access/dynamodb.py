@@ -6,10 +6,10 @@ from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 from mypy_boto3_dynamodb import DynamoDBServiceResource
 
-from chalicelib.data_access.abstract import PK, AbstractDataAccess
-from chalicelib.data_access.exceptions import AlreadyExists, DoesNotExist
-from chalicelib.models.abstract import DynamoDBBaseModel
-from chalicelib.settings import settings
+from src.data_access.abstract import PK, AbstractDataAccess
+from src.data_access.exceptions import AlreadyExists, DoesNotExist
+from src.models.abstract import DynamoDBBaseModel
+from src.settings import settings
 
 
 SK = TypeVar("SK")

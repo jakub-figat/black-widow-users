@@ -3,13 +3,18 @@ from typing import Any, Optional
 from uuid import uuid4
 
 import jwt
-from chalice import BadRequestError
 
-from chalicelib.data_access.user import UserDynamoDBDataAccess
-from chalicelib.enums import TokenType
-from chalicelib.models.token import TokenPairOutput
-from chalicelib.models.user import User, UserLoginInput
-from chalicelib.settings import settings
+from src.data_access.user import UserDynamoDBDataAccess
+from src.enums import TokenType
+from src.models.token import TokenPairOutput
+from src.models.user import User
+from src.schemas.user import UserLoginInput
+from src.settings import settings
+from src.utils.exceptions import ServiceException
+
+
+class TokenServiceException(ServiceException):
+    pass
 
 
 class TokenService:
@@ -38,23 +43,23 @@ class TokenService:
     @classmethod
     def validate_token_payload(cls, payload: dict[str, Any], token_type: TokenType) -> None:
         if payload["type"] != token_type.value:
-            raise BadRequestError("Invalid token type")
+            raise TokenServiceException("Invalid token type")
 
         if payload["exp"] <= dt.datetime.utcnow().timestamp():
-            raise BadRequestError("Token has expired")
+            raise TokenServiceException("Token has expired")
 
     @classmethod
     def parse_token_from_header(cls, header: str) -> str:
         try:
             prefix, token = header.split(" ", 1)
         except ValueError as error:
-            raise BadRequestError("Invalid bearer token") from error
+            raise TokenServiceException("Invalid bearer token") from error
 
         if not token.strip():
-            raise BadRequestError("Invalid bearer token")
+            raise TokenServiceException("Invalid bearer token")
 
         if prefix != "Bearer":
-            raise BadRequestError("Invalid bearer token")
+            raise TokenServiceException("Invalid bearer token")
 
         return token
 
@@ -78,16 +83,16 @@ class TokenService:
         user: Optional[User] = self._user_data_access.get(pk=user_key, sk=user_key)
 
         if user is None:
-            raise BadRequestError("Token credentials are invalid")
+            raise TokenServiceException("Token credentials are invalid")
 
         return user
 
     def create_token_pair_by_login(self, login_input: UserLoginInput) -> TokenPairOutput:
-        if not self._user_data_access.check_password(**login_input.dict()):
-            raise BadRequestError("Given credentials are invalid")
+        if (user := self._user_data_access.get_by_credentials(**login_input.dict())) is None:
+            raise TokenServiceException("Given credentials are invalid")
 
         token_pair = self.create_token_pair(subject=login_input.email)
-        self.save_user_refresh_token(refresh_token=token_pair["refresh_token"], user=User(email=login_input.email))
+        self.save_user_refresh_token(refresh_token=token_pair["refresh_token"], user=user)
 
         return TokenPairOutput(**token_pair)
 
@@ -99,7 +104,7 @@ class TokenService:
         user: Optional[User] = self._user_data_access.get(pk=user_key, sk=user_key)
 
         if user is None:
-            raise BadRequestError("Invalid refresh token")
+            raise TokenServiceException("Invalid refresh token")
 
         token_pair = self.create_token_pair(subject=user.email)
         self.save_user_refresh_token(refresh_token=token_pair["refresh_token"], user=user)

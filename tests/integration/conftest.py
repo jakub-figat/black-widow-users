@@ -2,11 +2,11 @@ import random
 
 import boto3
 import pytest
-from chalice.test import Client
+from fastapi.testclient import TestClient
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource, Table
 
-from app import app
-from chalicelib.settings import settings
+from main import app
+from src.settings import settings
 
 
 @pytest.fixture(scope="session")
@@ -52,6 +52,6 @@ def dynamodb_testcase_table(dynamodb_test_table: Table) -> Table:
 
 
 @pytest.fixture
-def test_client() -> Client:
-    with Client(app=app) as client:
+def test_client() -> TestClient:
+    with TestClient(app=app) as client:
         yield client

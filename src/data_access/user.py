@@ -2,10 +2,10 @@ from typing import Optional, Type
 
 from botocore.exceptions import ClientError
 
-from chalicelib.data_access.dynamodb import DynamoDBDataAccess
-from chalicelib.data_access.exceptions import AlreadyExists, DoesNotExist
-from chalicelib.models.user import User
-from chalicelib.utils.password import hash_password, verify_password
+from src.data_access.dynamodb import DynamoDBDataAccess
+from src.data_access.exceptions import AlreadyExists, DoesNotExist
+from src.models.user import User
+from src.utils.password import hash_password, verify_password
 
 
 class UserDynamoDBDataAccess(DynamoDBDataAccess[str]):
@@ -23,16 +23,16 @@ class UserDynamoDBDataAccess(DynamoDBDataAccess[str]):
                 raise AlreadyExists(f"User with email {email} already exists") from error
             raise error
 
-        return User(email=email)
+        return User.from_item(item=user_item)
 
-    def check_password(self, email: str, password: str) -> bool:
+    def get_by_credentials(self, email: str, password: str) -> Optional[User]:
         user_key = f"user#{email}"
         response = self._table.get_item(Key={"PK": user_key, "SK": user_key})
 
         if (user_item := response.get("Item")) is None:
             raise DoesNotExist(f"User with email {email} does not exist")
 
-        return verify_password(password, user_item["password"])
+        return None if not verify_password(password, user_item["password"]) else User.from_item(item=user_item)
 
     def add_refresh_token_jti(self, user: User, refresh_token_jti: str) -> None:
         user_model: Optional[User] = self.get(pk=user.pk, sk=user.pk)

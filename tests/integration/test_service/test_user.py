@@ -1,9 +1,9 @@
 import pytest
-from chalice import BadRequestError
 
-from chalicelib.data_access.user import UserDynamoDBDataAccess
-from chalicelib.models.user import UserRegisterInput
-from chalicelib.services.user import UserService
+from src.data_access.exceptions import AlreadyExists
+from src.data_access.user import UserDynamoDBDataAccess
+from src.models.user import UserRegisterInput
+from src.services.user import UserService
 
 
 @pytest.fixture
@@ -31,7 +31,7 @@ def test_user_service_raises_bad_request_error_when_email_is_occupied(user_servi
         )
     )
 
-    with pytest.raises(BadRequestError):
+    with pytest.raises(AlreadyExists):
         user_service.register_user(
             input_model=UserRegisterInput(
                 email="stachecki@op.pl", password="asdasdasd1234", password_again="asdasdasd1234"

@@ -3,13 +3,14 @@ from typing import Any
 
 import jwt
 import pytest
-from chalice import BadRequestError
 
-from chalicelib.data_access.user import UserDynamoDBDataAccess
-from chalicelib.enums import TokenType
-from chalicelib.models.user import User, UserLoginInput
-from chalicelib.services import TokenService
-from chalicelib.settings import settings
+from src.data_access.user import UserDynamoDBDataAccess
+from src.enums import TokenType
+from src.models.user import User
+from src.schemas.user import UserLoginInput
+from src.services import TokenService
+from src.services.token import TokenServiceException
+from src.settings import settings
 
 
 @pytest.fixture
@@ -25,7 +26,9 @@ def token_service_with_user_inserted(user_dynamodb_data_access: UserDynamoDBData
 
 @pytest.fixture
 def token_service_with_refresh_token_inserted(user_dynamodb_data_access: UserDynamoDBDataAccess) -> TokenService:
-    user_dynamodb_data_access.create(model=User(email="testing@op.pl", refresh_token_jtis=["abc"]))
+    user_dynamodb_data_access.create(
+        model=User(email="testing@op.pl", refresh_token_jtis=["abc"], password="password12345")
+    )
     return TokenService(user_data_access=user_dynamodb_data_access)
 
 
@@ -54,7 +57,7 @@ def test_token_service_create_token_and_decode(token_service: TokenService) -> N
 def test_token_service_raises_bad_request_error_when_invalid_token_is_passed(
     payload: dict[str, Any], token_type: TokenType, token_service: TokenService
 ) -> None:
-    with pytest.raises(BadRequestError):
+    with pytest.raises(TokenServiceException):
         token_service.validate_token_payload(payload=payload, token_type=token_type)
 
 
@@ -66,7 +69,7 @@ def test_token_service_can_parse_token_from_header(token_service: TokenService) 
 def test_token_service_raises_bad_request_error_on_parsing_header_when_header_is_invalid(
     header: str, token_service: TokenService
 ) -> None:
-    with pytest.raises(BadRequestError):
+    with pytest.raises(TokenServiceException):
         token_service.parse_token_from_header(header=header)
 
 

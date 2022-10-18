@@ -1,7 +1,7 @@
-from chalicelib.data_access.user import UserDynamoDBDataAccess
-from chalicelib.services.token import TokenService
-from chalicelib.services.user import UserService
-from chalicelib.settings import settings
+from src.data_access.user import UserDynamoDBDataAccess
+from src.services.token import TokenService
+from src.services.user import UserService
+from src.settings import settings
 
 
 user_dynamodb_data_access = UserDynamoDBDataAccess(table_name=settings.dynamodb_table_name)

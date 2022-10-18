@@ -1,22 +1,23 @@
 from typing import Any
 
-from pydantic import BaseModel, EmailStr, Field, validator
+from pydantic import EmailStr, Field, validator
 
-from chalicelib.models.abstract import DynamoDBBaseModel
+from src.models.abstract import BaseSchema, DynamoDBBaseModel
 
 
 class User(DynamoDBBaseModel):
     email: str
+    password: str
     refresh_token_jtis: list[str] = Field(default_factory=list, unique_items=True)
 
     @classmethod
     def from_item(cls, item: dict[str, Any]) -> "User":
         _, email = item["PK"].split("#")
-        return cls(email=email, refresh_token_jtis=item.get("refresh_token_jtis", []))
+        return cls(email=email, refresh_token_jtis=item.get("refresh_token_jtis", []), password=item.get("password"))
 
     def to_item(self) -> dict[str, Any]:
         key = self.pk
-        return {"PK": key, "SK": key, "refresh_token_jtis": self.refresh_token_jtis}
+        return {"PK": key, "SK": key, "refresh_token_jtis": self.refresh_token_jtis, "password": self.password}
 
     @property
     def pk(self) -> str:
@@ -27,7 +28,7 @@ class User(DynamoDBBaseModel):
         return f"user#{self.email}"
 
 
-class UserRegisterInput(BaseModel):
+class UserRegisterInput(BaseSchema):
     email: EmailStr
     password: str = Field(..., min_length=8, max_length=32)
     password_again: str = Field(..., min_length=8, max_length=32)
@@ -38,8 +39,3 @@ class UserRegisterInput(BaseModel):
             raise ValueError("Passwords do not match.")
 
         return password_again
-
-
-class UserLoginInput(BaseModel):
-    email: EmailStr
-    password: str = Field(..., min_length=8, max_length=32)
