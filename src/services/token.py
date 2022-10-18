@@ -72,7 +72,10 @@ class TokenService:
 
     @classmethod
     def decode_token(cls, token: str) -> dict[str, Any]:
-        return jwt.decode(jwt=token, key=settings.secret_key, algorithms=["HS256"])
+        try:
+            return jwt.decode(jwt=token, key=settings.secret_key, algorithms=["HS256"])
+        except jwt.InvalidTokenError as exc:
+            raise TokenServiceException(str(exc))
 
     def authenticate_user_from_header(self, header: str) -> User:
         token = self.parse_token_from_header(header=header)

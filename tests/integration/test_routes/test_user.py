@@ -16,7 +16,7 @@ def user_data_access_with_user_inserted(dynamodb_testcase_table: Table) -> UserD
 
 def test_register_user(test_client: TestClient, dynamodb_testcase_table: Table) -> None:
     request_data = {"email": "stachmen@op.pl", "password": "abcdefg1234", "password_again": "abcdefg1234"}
-    response = test_client.post("/users/register", json=request_data, headers={"Content-Type": "application/json"})
+    response = test_client.post("/users/register/", json=request_data, headers={"Content-Type": "application/json"})
     response_data = response.json()
 
     assert response.status_code == status.HTTP_201_CREATED
@@ -28,7 +28,7 @@ def test_register_users_returns_bad_request_when_email_is_occupied(
 ) -> None:
     request_data = {"email": "stach@op.pl", "password": "abcdefg1234", "password_again": "abcdefg1234"}
 
-    response = test_client.post("/users/register", json=request_data, headers={"Content-Type": "application/json"})
+    response = test_client.post("/users/register/", json=request_data, headers={"Content-Type": "application/json"})
     response_data = response.json()
     assert response_data == {"detail": "User with email stach@op.pl already exists"}
     assert response.status_code == status.HTTP_400_BAD_REQUEST

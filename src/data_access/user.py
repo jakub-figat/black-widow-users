@@ -44,10 +44,5 @@ class UserDynamoDBDataAccess(DynamoDBDataAccess[str]):
         self._table.put_item(Item=user_model.to_item())
 
     def delete_user_refresh_token_jtis(self, user: User) -> None:
-        user_model: Optional[User] = self.get(pk=user.pk, sk=user.sk)
-
-        if user_model is None:
-            raise DoesNotExist(f"User with email {user.email} does not exist")
-
-        user_model.refresh_token_jtis = []
-        self._table.put_item(Item=user_model.to_item())
+        user.refresh_token_jtis = []
+        self._table.put_item(Item=user.to_item())

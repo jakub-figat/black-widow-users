@@ -47,57 +47,52 @@ def access_token(registered_user: User) -> str:
 def test_user_can_get_token_pair(test_client: TestClient, registered_user: User) -> None:
     request_body = {"email": "janusz123@op.pl", "password": "password12345"}
 
-    response = test_client.post("/tokens", body=json.dumps(request_body), headers={"Content-Type": "application/json"})
+    response = test_client.post("/tokens/", json=request_body)
     response_data = response.json()
 
     assert response.status_code == 200
-    assert "access_token" in response_data
-    assert "refresh_token" in response_data
+    assert "accessToken" in response_data
+    assert "refreshToken" in response_data
 
 
 def test_user_cannot_get_token_pair_with_invalid_credentials(test_client: TestClient, registered_user: User) -> None:
     requests_body = {"email": "janusz123@op.pl", "password": "invaaaaalid"}
-    response = test_client.post(
-        "/tokens", body=json.dumps(requests_body), headers={"Content-Type": "application/json"}
-    )
+    response = test_client.post("/tokens/", json=requests_body, headers={"Content-Type": "application/json"})
 
     response_data = response.json()
 
     assert response.status_code == 400
-    assert response_data == {"Code": "BadRequestError", "Message": "Given credentials are invalid"}
+    assert response_data == {"detail": "Given credentials are invalid"}
 
 
 def test_user_can_get_token_pair_by_refresh(
     test_client: TestClient, registered_user: User, refresh_token: str
 ) -> None:
     headers = {"Authorization": f"Bearer {refresh_token}"}
-    response = test_client.post("/tokens/refresh", headers=headers)
+    response = test_client.post("/tokens/refresh/", headers=headers)
 
     response_data = response.json()
 
     assert response.status_code == 200
-    assert "access_token" in response_data
-    assert "refresh_token" in response_data
+    assert "accessToken" in response_data
+    assert "refreshToken" in response_data
 
 
 def test_user_cannot_get_token_pair_by_refresh_with_empty_authorization_header(
     test_client: TestClient, registered_user: User
 ) -> None:
-    response = test_client.post("/tokens/refresh")
+    response = test_client.post("/tokens/refresh/")
     response_data = response.json()
 
-    assert response.status_code == 400
-    assert response_data == {
-        "Code": "BadRequestError",
-        "Message": "No refresh token specified in Authorization header",
-    }
+    assert response.status_code == 401
+    assert response_data == {"detail": "Not authenticated"}
 
 
 def test_user_can_revoke_refresh_tokens(
     test_client: TestClient, registered_user: User, refresh_token: str, access_token: str
 ) -> None:
     headers = {"Authorization": f"Bearer {access_token}"}
-    response = test_client.post("/tokens/revoke", headers=headers)
+    response = test_client.post("/tokens/revoke/", headers=headers)
 
     assert response.status_code == 204
     assert user_service._user_data_access.get(pk=registered_user.pk, sk=registered_user.sk).refresh_token_jtis == []
@@ -106,5 +101,5 @@ def test_user_can_revoke_refresh_tokens(
 def test_user_cannot_revoke_refresh_tokens_without_access_token(
     test_client: TestClient, registered_user: User, refresh_token: str
 ) -> None:
-    response = test_client.post("/tokens/revoke")
+    response = test_client.post("/tokens/revoke/")
     assert response.status_code == 401
