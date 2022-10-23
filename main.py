@@ -31,3 +31,6 @@ def handle_does_not_exist(request: Request, exception: DoesNotExist) -> JSONResp
 @app.exception_handler(ServiceException)
 def handle_service_exception(request: Request, exception: ServiceException) -> JSONResponse:
     return JSONResponse(content={"detail": str(exception)}, status_code=status.HTTP_400_BAD_REQUEST)
+
+
+# TODO: environment in serverless.yml

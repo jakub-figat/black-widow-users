@@ -253,4 +253,4 @@ celerybeat-schedule
 .chalice/deployed/
 requirements.txt
 venv
-
+.serverless

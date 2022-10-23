@@ -1,6 +1,8 @@
 frameworkVersion: '3'
 service: black-widow-users
 
+useDotenv: true
+
 provider:
   name: aws
   region: eu-central-1
@@ -13,23 +15,39 @@ plugins:
 
 custom:
   pythonRequirements:
+    slim: true
+    dockerImage: mlupin/docker-lambda:python3.9-build
+    dockerizePip: non-linux
     usePoetry: true
-    dockerizePip: true
+    useDownloadCache: true
+    useStaticCache: false
+    invalidateCaches: false
 
 
 functions:
   users:
+    environment:
+      aws_access_key: ${env:AWS_ACCESS_KEY}
+      aws_secret_key: ${env:AWS_SECRET_KEY}
+      DYNAMODB_TABLE_NAME: ${env:DYNAMODB_TABLE_NAME}
+      SECRET_KEY: ${env:SECRET_KEY}
+    package:
+      exclude:
+        - venv/**
     handler: main.handler
     events:
       - http:
-          path: /users/register
+          path: /users/register/
           method: post
       - http:
-          path: /tokens
+          method: get
+          path: /users/me/
+      - http:
+          path: /tokens/
           method: post
       - http:
-          path: /tokens/refresh
+          path: /tokens/refresh/
           method: post
       - http:
-          path: /tokens/revoke
+          path: /tokens/revoke/
           method: post

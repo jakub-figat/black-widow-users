@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "users"
 version = "0.1.0"
-description = "User microservice of black-widow project. Built with AWS Chalice"
+description = "User microservice of black-widow project. Built with AWS Lambda and DynamoDB"
 authors = ["jakub-figat <jakub.figat@neontri.com>"]
 
 [tool.poetry.dependencies]
@@ -11,7 +11,6 @@ pydantic = {extras = ["email"], version = "^1.9.0"}
 boto3 = "^1.22.9"
 mypy-boto3-dynamodb = "^1.22.8"
 passlib = "^1.7.4"
-bcrypt = "^3.2.2"
 PyJWT = "^2.3.0"
 mypy-boto3-s3 = "^1.22.8"
 fastapi = "^0.85.1"
@@ -36,6 +35,7 @@ exclude = '''
   | \.mypy_cache
   | \.tox
   | venv
+  | .serverless
   | _build
   | buck-out
   | build
@@ -47,7 +47,7 @@ exclude = '''
 line_length = 119
 lines_after_imports = 2
 profile = "black"
-skip_glob = ["venv/*"]
+skip_glob = ["venv/*", ".serverless/*"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
