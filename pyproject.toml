@@ -15,6 +15,7 @@ PyJWT = "^2.3.0"
 mypy-boto3-s3 = "^1.22.8"
 fastapi = "^0.85.1"
 mangum = "^0.15.1"
+aws-lambda-powertools = "^1.31.1"
 
 [tool.poetry.dev-dependencies]
 black = "^22.3.0"
