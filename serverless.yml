@@ -51,3 +51,13 @@ functions:
       - http:
           path: /tokens/revoke/
           method: post
+  authorizer:
+    environment:
+      aws_access_key: ${env:AWS_ACCESS_KEY}
+      aws_secret_key: ${env:AWS_SECRET_KEY}
+      DYNAMODB_TABLE_NAME: ${env:DYNAMODB_TABLE_NAME}
+      SECRET_KEY: ${env:SECRET_KEY}
+    package:
+      exclude:
+        - venv/**
+    handler: src.authorizer.authorize_from_jwt
