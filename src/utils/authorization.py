@@ -1,12 +1,23 @@
-from chalice import AuthResponse
-from chalice.app import AuthRequest
-
-from app import app
-from src.services import token_service
+from typing import Any, Optional
 
 
-@app.authorizer()
-def jwt_auth(auth_request: AuthRequest) -> AuthResponse:
-    user = token_service.authenticate_user_from_header(auth_request.token)
+def generate_authorizer_policy_response(
+    principal_id: Optional[str],
+    method_arn: str,
+) -> dict[str, Any]:
+    if principal_id is None:
+        return {
+            "principalId": "Unknown",
+            "policyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [{"Action": "execute-api:Invoke", "Effect": "Deny", "Resource": method_arn}],
+            },
+        }
 
-    return AuthResponse(routes=["*"], principal_id=user.email)
+    return {
+        "principalId": principal_id,
+        "policyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [{"Action": "execute-api:Invoke", "Effect": "Allow", "Resource": method_arn}],
+        },
+    }
